@@ -64,3 +64,33 @@
 .text-left{
     text-align: left;
 }
+
+.div-border{
+    border: 1px solid #28262c;
+    border-radius: 10px;
+}
+
+.fill {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width:70%;
+    height: 70%
+}
+.fill img {
+    flex-shrink: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width:70%;
+    height: 70%
+}
+
+.link{
+    color: blue;
+    text-decoration: underline;
+}
+
+.link:hover{
+    cursor: pointer;
+}

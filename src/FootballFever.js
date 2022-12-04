@@ -5,6 +5,10 @@ import Typography from '@mui/material/Typography';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import TextField from '@mui/material/TextField';
+
+import { sampleMatches } from "./SampleMatches";
 
 function Header(){
     return(        
@@ -80,9 +84,11 @@ function Homepage(){
                     <div className="child-left ">
                         <img src={homepageImg} alt={homepageImgAlt} style={{width:'80%'}} className="img-shadow"/>
                     </div>
-                    <div className="child-right font">
-                        <p><strong>Welcome to Football Fever!</strong></p>
-                        <p>We provide highlights of matches and live scores of each match from all around the world.</p>
+                    <div className="child-right">
+                        <Typography color="text.secondary" variant="body2">
+                            <p><strong>Welcome to Football Fever!</strong></p>
+                            <p>We provide highlights of matches and live scores of each match from all around the world.</p>
+                        </Typography>                        
                     </div>
                 </div>
             </div>                       
@@ -99,9 +105,92 @@ function MatchTitleOnly(props){
 }
 
 function MatchHighlights(){
+    const [matches, setMatches] = React.useState(null)    
+
+    React.useEffect(
+        () => {
+            console.log("call useeffect")
+            /*const api = "https://www.scorebat.com/video-api/v3/feed/?token=" + process.env.REACT_APP_VIDEO_API_KEY
+            console.log(api)
+    
+            fetch(api)
+            .then((res) => res.json()
+            .then((json) => {
+                const allMatches = [...json.response]
+                console.log(allMatches) 
+                setMatches([...allMatches])
+            }))*/
+
+            setMatches([...sampleMatches])
+        }, []
+    )
+
+    console.log("match highlight matches")
+    console.log(matches)
+
     return(
-        <div>            
-            This is match highlight
+        <div>
+            <div style={{}}>
+                <span>
+                    <Typography color="text.secondary" variant="body2">
+                        You may search your team / competiton here: 
+                    </Typography>                
+                <TextField id="standard-basic" label="Keyword" variant="outlined" />
+                </span>
+            </div><br/>
+            {matches === null ? <p className="font"><center>No match</center></p> : matches.map((match, index) => {return <Match key={index} match={match} />})}
+        </div>
+    )
+}
+
+function Match(props){
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
+    const openCompetition = (url) => {
+        console.log("Open competition: " + url)
+        window.open(url)
+    }
+
+    return(
+        <div>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"                
+            >
+                <div className="fill">
+                    <img src={props.match.thumbnail} alt />
+                </div>
+            </Modal>
+            <center>
+            <div className="div-border" style={{backgroundColor: 'white', width: '50%', textAlign: 'left', padding: '10px'}}>
+                <Typography color="text.secondary" variant="body2">
+                    <p><span onClick={()=>{openCompetition(props.match.competitionUrl)}}><strong className="link">{props.match.title}</strong></span>&nbsp;<span style={{float: 'right'}}>Match Day: <b>{props.match.date.substring(0,10)}</b></span></p>
+                    <p>{props.match.competition}</p>
+                    <center><img src={props.match.thumbnail} alt style={{width: '50%', height: '20%'}} onClick={handleOpen}/></center>
+                    {props.match.videos.map((video, index) => {return <MatchVideo key={index} video={video} />})}
+                </Typography>
+            </div>
+            <div>&nbsp;</div>
+            </center>
+        </div>
+    )
+}
+
+function MatchVideo(props){
+    const rawHTML = props.video.embed
+    return(
+        <div>
+            
+            <Typography color="text.secondary" variant="body2">
+                <Typography variant="h6" gutterBottom>
+                    <strong>{props.video.title}</strong>
+                </Typography>
+                <div dangerouslySetInnerHTML={{ __html: rawHTML }}></div>
+            </Typography>
         </div>
     )
 }
