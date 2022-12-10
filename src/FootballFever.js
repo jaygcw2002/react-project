@@ -105,25 +105,31 @@ function MatchTitleOnly(props){
 }
 
 function MatchHighlights(){
-    const [matches, setMatches] = React.useState(null)    
+    const [matches, setMatches] = React.useState(null)
+    const [keyword, setKeyword] = React.useState('')    
 
     React.useEffect(
         () => {
             console.log("call useeffect")
-            /*const api = "https://www.scorebat.com/video-api/v3/feed/?token=" + process.env.REACT_APP_VIDEO_API_KEY
+            const api = "https://www.scorebat.com/video-api/v3/feed/?token=" + process.env.REACT_APP_VIDEO_API_KEY
             console.log(api)
-    
-            fetch(api)
-            .then((res) => res.json()
-            .then((json) => {
-                const allMatches = [...json.response]
-                console.log(allMatches) 
-                setMatches([...allMatches])
-            }))*/
-
-            setMatches([...sampleMatches])
-        }, []
+            
+            if(matches == null){
+                console.log("Matches is null. Call api to get matches.")
+                fetch(api)
+                .then((res) => res.json()
+                .then((json) => {
+                    const allMatches = [...json.response]
+                    console.log(allMatches) 
+                    setMatches([...allMatches])
+                }))
+            }
+        }, [keyword]
     )
+
+    const handleChange = (event) => {
+        setKeyword(event.target.value)
+    }
 
     console.log("match highlight matches")
     console.log(matches)
@@ -134,11 +140,11 @@ function MatchHighlights(){
                 <span>
                     <Typography color="text.secondary" variant="body2">
                         You may search your team / competiton here: 
-                    </Typography>                
-                <TextField id="standard-basic" label="Keyword" variant="outlined" />
+                    </Typography><br/>                
+                <TextField id="standard-basic" label="Keyword" variant="outlined" onChange={(event)=>handleChange(event)} value={keyword}/>
                 </span>
             </div><br/>
-            {matches === null ? <p className="font"><center>No match</center></p> : matches.map((match, index) => {return <Match key={index} match={match} />})}
+            {matches === null ? <p className="font"><center>No match</center></p> : keyword !== '' ? matches.filter(p => p.title.toLowerCase().includes(keyword.toLowerCase()) || p.competition.toLowerCase().includes(keyword.toLowerCase())).map((match, index) => {return <Match key={index} match={match} />}):matches.map((match, index) => {return <Match key={index} match={match} />})}
         </div>
     )
 }
@@ -168,8 +174,8 @@ function Match(props){
             <center>
             <div className="div-border" style={{backgroundColor: 'white', width: '50%', textAlign: 'left', padding: '10px'}}>
                 <Typography color="text.secondary" variant="body2">
-                    <p><span onClick={()=>{openCompetition(props.match.competitionUrl)}}><strong className="link">{props.match.title}</strong></span>&nbsp;<span style={{float: 'right'}}>Match Day: <b>{props.match.date.substring(0,10)}</b></span></p>
-                    <p>{props.match.competition}</p>
+                    <p>{props.match.title}&nbsp;<span style={{float: 'right'}}>Match Day: <b>{props.match.date.substring(0,10)}</b></span></p>
+                    <p><span onClick={()=>{openCompetition(props.match.competitionUrl)}}><strong className="link">{props.match.competition}</strong></span></p>
                     <center><img src={props.match.thumbnail} alt style={{width: '50%', height: '20%'}} onClick={handleOpen}/></center>
                     {props.match.videos.map((video, index) => {return <MatchVideo key={index} video={video} />})}
                 </Typography>
